@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+    <link href="/flea/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/flea/css/common.css" rel="stylesheet">
+    <style>
+        #app {
+            width: 100vw;
+        }
+
+        #content {
+            text-align: center;
+        }
+
+        .sign {
+            margin-top: 25vh;
+            font-size: 100px;
+            display: block;
+        }
+
+
+    </style>
+</head>
+<body class="bg-body">
+<div id="app">
+    <nav id="nav" class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav" id="views">
+                <div class="nav-link active" id="home">Home</div>
+            </div>
+        </div>
+    </nav>
+    <div id="content">
+        <span class="sign">旧货市场</span>
+    </div>
+</div>
+
+<script src="/flea/js/jquery-3.6.0.min.js"></script>
+<script src="/flea/js/bootstrap.min.js"></script>
+</body>
+
+<script type="module">
+    import {views} from "./js/request/view.js";
+
+    const home = document.getElementById("home");
+    home.onclick = (e) => {
+        document.querySelector('#views>.active').classList.remove('active')
+        e.currentTarget.classList.add('active')
+    }
+    views().then((list) => {
+        const nav = document.getElementById('views');
+        list.forEach((viewName) => {
+            if (viewName !== "") {
+                const link = "/flea/view/" + viewName;
+                const div = document.createElement('div');
+                div.classList.add('nav-link')
+                div.innerText = viewName
+                div.onclick = async (e) => {
+                    nav.querySelector('.active').classList.remove('active')
+                    e.currentTarget.classList.add('active')
+                    location.href = link
+                }
+                nav.appendChild(div);
+            }
+        })
+    }).catch((res) => {
+        console.log(res);
+    });
+
+</script>
+</html>

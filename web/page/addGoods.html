@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add</title>
+    <link href="/flea/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/flea/css/common.css" rel="stylesheet">
+    <STYLE>
+        /** {*/
+        /*    margin: 0 auto;*/
+        /*}*/
+
+        #goods_form {
+            margin: 5% auto;
+            width: 40%;
+        }
+    </STYLE>
+</head>
+<body class="bg-body">
+<div id="app">
+    <nav id="nav" class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav" id="views">
+                <div class="nav-link active" id="home">Home</div>
+            </div>
+        </div>
+    </nav>
+    <div id="goods_form">
+        <h3>上架新货</h3>
+        <hr/>
+        <form id="form">
+            <div class="form-group marginTop">
+                <label for="name">商品名</label>
+                <input type="text" class="form-control" value="祖母绿痱啐"
+                       name="username" id="name" placeholder="请输入商品名">
+            </div>
+            <div class="form-group marginTop">
+                <label for="description">描述</label>
+                <input type="text" class="form-control" value="生机盎然，题材值三千"
+                       name="password" id="description" placeholder="请输入描述">
+            </div>
+            <div class="form-group marginTop">
+                <label for="price">单价</label>
+                <input type="number" class="form-control" value="250"
+                       name="password" id="price" placeholder="请输入单价">
+            </div>
+            <div id="submit" class="marginTop">
+                <input type="button" class="btn btn-primary" id="add" value="上架"/>
+            </div>
+        </form>
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+            <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">Flea</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    添加成功
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/flea/js/jquery-3.6.0.min.js"></script>
+<script src="/flea/js/bootstrap.min.js"></script>
+</body>
+<script type="module">
+    import {add} from "../js/request/goods.js";
+
+    window.onload = () => {
+        const addBtn = document.getElementById("add");
+        addBtn.onclick = async () => {
+            let nameInput = document.getElementById("name");
+            let descriptionInput = document.getElementById("description");
+            let priceInput = document.getElementById("price");
+            let name = nameInput.value;
+            let description = descriptionInput.value;
+            let price = priceInput.value;
+            try {
+                await add({name, description, price})
+            } catch (e) {
+                console.log(e)
+                return;
+            }
+            const liveToast = document.getElementById('liveToast')
+            const toast = new bootstrap.Toast(liveToast)
+            toast.show()
+        }
+        document.querySelector('#home').onclick = () => location.href = "http://localhost:8080/flea"
+    }
+
+</script>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>register</title>
+    <style>
+        * {
+            margin: 0 auto;
+        }
+
+        #register_form {
+            margin-top: 5%;
+            width: 40%;
+        }
+
+        #submit {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+        #register {
+            letter-spacing: 20px;
+            text-indent: 20px;
+            width: 30%;
+        }
+
+        .tips {
+            display: inline;
+            float: right;
+            font-size: 10px;
+            margin-top: 7px;
+        }
+
+        .wrong {
+            color: red;
+        }
+
+        .well {
+            color: green;
+        }
+
+    </style>
+    <link href="/flea/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/flea/css/common.css" rel="stylesheet">
+</head>
+<body class="bg-body">
+<div id="register_form">
+    <h3>Register</h3>
+    <hr/>
+    <form>
+        <div class="form-group marginTop">
+            <label for="username">用户名</label>
+            <div class="tips">
+                <span id="username_tips"></span>
+            </div>
+            <input type="text" class="form-control"
+                   name="username" id="username" placeholder="请输入用户名">
+        </div>
+        <div class="form-group marginTop">
+            <label for="password">密码</label>
+            <div class="tips">
+                <span id="password_tips"></span>
+            </div>
+            <input type="password" class="form-control"
+                   name="password" id="password" placeholder="请输入密码">
+        </div>
+        <div class="form-group marginTop">
+            <div class="tips">
+                <span id="repeat_password_tips"></span>
+            </div>
+            <label for="repeat_password">确认密码</label>
+            <input type="password" class="form-control"
+                   name="repeat_password" id="repeat_password" placeholder="确认密码">
+        </div>
+        <div id="submit" class="marginTop">
+            <input type="button" class="btn btn-primary" id="register" value="注册"/>
+        </div>
+    </form>
+</div>
+<script src="/flea/js/jquery-3.6.0.min.js"></script>
+<script src="/flea/js/bootstrap.min.js"></script>
+<script type="module">
+    import {checkUsername, register} from "../js/request/user.js";
+
+    let pwdInput = document.getElementById("password");
+    let repeatInput = document.getElementById("repeat_password");
+    let usernameInput = document.getElementById("username");
+    let registerBtn = document.getElementById("register");
+
+    usernameInput.onblur = () => {
+        let username = usernameInput.value;
+        let tips = document.getElementById("username_tips");
+        const pattern = /^[\w_\u4e00-\u9fa5\-]{2,12}$/;
+        if (!pattern.test(username)) {
+            tips.innerText = "*格式错误";
+            tips.classList.remove("well");
+            tips.classList.add("wrong");
+            return;
+        }
+        checkUsername(username).then(({isAble}) => {
+            if (isAble) {
+                tips.innerText = "*ok";
+                tips.classList.add("well");
+                tips.classList.remove("wrong");
+            } else {
+                tips.innerText = "*用户名已存在";
+                tips.classList.remove("well");
+                tips.classList.add("wrong");
+            }
+
+        });
+    }
+
+    pwdInput.onblur = () => {
+        let password = pwdInput.value;
+        let tips = document.getElementById("password_tips");
+        const pattern = /^[\w_!@#$%^&*~+-=]{6,16}$/;
+        if (!pattern.test(password)) {
+            tips.innerText = "*格式错误";
+            tips.classList.remove("well");
+            tips.classList.add("wrong");
+        } else {
+            tips.innerText = "*ok";
+            tips.classList.add("well");
+            tips.classList.remove("wrong");
+        }
+    }
+
+    repeatInput.onblur = () => {
+        let repeat = repeatInput.value;
+        let password = pwdInput.value;
+        let tips = document.getElementById("repeat_password_tips");
+        if (repeat !== password) {
+            tips.innerText = "*两次密码不同";
+            tips.classList.remove("well");
+            tips.classList.add("wrong");
+        } else {
+            tips.innerText = "*ok";
+            tips.classList.add("well");
+            tips.classList.remove("wrong");
+        }
+    }
+
+    registerBtn.onclick = async () => {
+        let username = usernameInput.value;
+        let password = pwdInput.value;
+        let repeat = repeatInput.value;
+        try {
+            const {userId, token} = await register({
+                "username": username,
+                "password": password,
+                "repeatPassword": repeat
+            })
+            alert("注册成功");
+            localStorage.setItem("token", token)
+            localStorage.setItem("userId", userId)
+            location.href = "http://localhost:8080/flea"
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+</script>
+</body>
+
+</html>

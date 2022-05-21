@@ -1,0 +1,9 @@
+.marginTop {
+    margin-top: 20px;;
+}
+
+.bg-body {
+    background-image: url(/flea/img/bg.jpeg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}

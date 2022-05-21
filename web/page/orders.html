@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>order</title>
+    <link href="/flea/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/flea/css/common.css" rel="stylesheet">
+    <style>
+        .content {
+            margin: 0 auto;
+            padding: 0;
+            width: 90vw;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .btn {
+            height: 30px;
+            line-height: 16px;
+        }
+
+        .detailCard {
+            margin: 10% auto;
+        }
+
+        .tab {
+            height: 80vh;
+        }
+
+        .details {
+            padding: 0;
+        }
+
+        #page-bar {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-body">
+<div id="app">
+    <nav id="nav" class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav" id="views">
+                <div class="nav-link active" id="home">Home</div>
+                <div class="nav-link active" id="buyer">我买的</div>
+                <div class="nav-link active" id="seller">我卖的</div>
+            </div>
+        </div>
+    </nav>
+    <div class="content">
+        <div class="orders">
+            <div class="tab">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">订单号</th>
+                        <th scope="col">商品名</th>
+                        <th scope="col">单价</th>
+                        <th scope="col">买主</th>
+                        <th scope="col">卖家</th>
+                        <th scope="col">下单时间</th>
+                    </tr>
+                    </thead>
+                    <tbody class="tbody">
+
+                    </tbody>
+                </table>
+            </div>
+            <div id="page-bar">
+                <div class="d-flex justify-content-center">
+                    <ul class="pagination">
+                        <li class="page-item" id="previous">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul id="page-btn" class="pagination">
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    </ul>
+
+                    <ul class="pagination">
+                        <li class="page-item" id="next">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="details hide">
+            <div class="card detailCard" style="width: 30rem;">
+                <div class="card-header">
+                    订单详情
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <span class="tag">订单号:</span>
+                        <span class="d_orderId"></span>
+                    </li>
+                    <li class="list-group-item ">
+                        <span class="tag">商品名:</span>
+                        <span class="d_goodsName"></span>
+                    </li>
+                    <li class="list-group-item ">
+                        <span class="tag">商品描述:</span>
+                        <span class="d_description"></span>
+                    </li>
+                    <li class="list-group-item ">
+                        <span class="tag">卖家:</span>
+                        <span class="d_sellerName"></span>
+                    </li>
+                    <li class="list-group-item ">
+                        <span class="tag">买主:</span>
+                        <span class="d_buyerName"></span>
+                    </li>
+                    <li class="list-group-item ">
+                        <span class="tag">单价:</span>
+                        <span class="d_price"></span>
+                    </li>
+                    <li class="list-group-item ">
+                        <span class="tag">订单时间:</span>
+                        <span class="d_orderTime"></span>
+                    </li>
+                    <li class="list-group-item ">
+                        <span class="tag">上架时间:</span>
+                        <span class="d_goodsTime"></span>
+                    </li>
+                </ul>
+                <button type="button" class="btn btn-light back">返回</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/flea/js/jquery-3.6.0.min.js"></script>
+<script src="/flea/js/bootstrap.min.js"></script>
+<script type="module">
+    import {buyerTotal, sellerTotal, sellerOrders, buyerOrders, orderDetails, del} from "../js/request/order.js";
+
+    let status = 0
+    let currentPage = 1;
+    let maxPage = 0
+
+    function buyerOrderDom(index, data) {
+        const trDom = document.createElement('tr');
+        const indexDom = document.createElement('td');
+        indexDom.innerText = index + 1 + (currentPage - 1) * 10
+        indexDom.classList.add('order_index')
+        indexDom.onclick = async (ev) => {
+            const dom = ev.currentTarget
+            const index = (dom.innerText - 1) % 10;
+            const orderId = data[index].orderId;
+            try {
+                const {details} = await orderDetails(orderId)
+
+                document.querySelector('.d_orderId').innerText = details.orderId
+                document.querySelector('.d_goodsName').innerText = details.goodsName
+                document.querySelector('.d_description').innerText = details.description
+                document.querySelector('.d_sellerName').innerText = details.sellerName
+                document.querySelector('.d_buyerName').innerText = details.buyerName
+                document.querySelector('.d_price').innerText = details.price
+                document.querySelector('.d_orderTime').innerText = details.orderTime
+                document.querySelector('.d_goodsTime').innerText = details.goodsTime
+            } catch (e) {
+                console.log(e)
+                return
+            }
+            document.querySelector('.orders').classList.add('hide')
+            document.querySelector('.details').classList.remove('hide')
+            document.querySelector('.back').onclick = () => {
+                document.querySelector('.orders').classList.remove('hide')
+                document.querySelector('.details').classList.add('hide')
+            }
+            ev.stopPropagation()
+        }
+        const orderIdDom = document.createElement('td');
+        orderIdDom.innerText = data[index].orderId
+        orderIdDom.classList.add('orderId')
+        const goodsNameDom = document.createElement('td');
+        goodsNameDom.innerText = data[index].goodsName
+        goodsNameDom.classList.add('goodsName')
+        const priceDom = document.createElement('td');
+        priceDom.innerText = data[index].price
+        priceDom.classList.add('price')
+        const sellerDom = document.createElement('td');
+        sellerDom.innerText = data[index].sellerName
+        sellerDom.classList.add('sellerName')
+        const buyerDom = document.createElement('td');
+        buyerDom.innerText = data[index].buyerName
+        buyerDom.classList.add('buyerName')
+        const orderTimeDom = document.createElement('td');
+        orderTimeDom.innerText = data[index].orderTime
+        orderTimeDom.classList.add('orderTime')
+        const operateDom = document.createElement('td');
+        const btn = document.createElement('button');
+        btn.innerText = '删除'
+        btn.classList.add('btn', 'btn-danger')
+        operateDom.append(btn)
+        trDom.append(indexDom)
+        trDom.append(orderIdDom)
+        trDom.append(goodsNameDom)
+        trDom.append(priceDom)
+        trDom.append(buyerDom)
+        trDom.append(sellerDom)
+        trDom.append(orderTimeDom)
+        trDom.append(operateDom)
+        btn.onclick = async ev => {
+            const dom = ev.currentTarget.parentNode.parentNode
+            const index = (dom.querySelector('.order_index').innerText - 1) % 10
+            const flag = confirm("确认删除？");
+            if (flag) {
+                const orderId = data[index].orderId;
+                try {
+                    await del(orderId)
+                } catch (e) {
+                    console.log(e)
+                }
+                await view()
+                await viewPage()
+            }
+            ev.stopPropagation()
+        }
+        return trDom
+    }
+
+    function sellerOrderDom(index, data) {
+        const trDom = document.createElement('tr');
+        const indexDom = document.createElement('td');
+        indexDom.innerText = index + 1 + (currentPage - 1) * 10
+        indexDom.classList.add('order_index')
+        indexDom.onclick = async (ev) => {
+            const dom = ev.currentTarget
+            const index = (dom.innerText - 1) % 10;
+            const orderId = data[index].orderId;
+            try {
+                const {details} = await orderDetails(orderId)
+
+                document.querySelector('.d_orderId').innerText = details.orderId
+                document.querySelector('.d_goodsName').innerText = details.goodsName
+                document.querySelector('.d_description').innerText = details.description
+                document.querySelector('.d_sellerName').innerText = details.sellerName
+                document.querySelector('.d_buyerName').innerText = details.buyerName
+                document.querySelector('.d_price').innerText = details.price
+                document.querySelector('.d_orderTime').innerText = details.orderTime
+                document.querySelector('.d_goodsTime').innerText = details.goodsTime
+            } catch (e) {
+                console.log(e)
+                return
+            }
+            document.querySelector('.orders').classList.add('hide')
+            document.querySelector('.details').classList.remove('hide')
+            document.querySelector('.back').onclick = () => {
+                document.querySelector('.orders').classList.remove('hide')
+                document.querySelector('.details').classList.add('hide')
+            }
+            ev.stopPropagation()
+        }
+        const orderIdDom = document.createElement('td');
+        orderIdDom.innerText = data[index].orderId
+        orderIdDom.classList.add('orderId')
+        const goodsNameDom = document.createElement('td');
+        goodsNameDom.innerText = data[index].goodsName
+        goodsNameDom.classList.add('goodsName')
+        const priceDom = document.createElement('td');
+        priceDom.innerText = data[index].price
+        priceDom.classList.add('price')
+        const sellerDom = document.createElement('td');
+        sellerDom.innerText = data[index].sellerName
+        sellerDom.classList.add('sellerName')
+        const buyerDom = document.createElement('td');
+        buyerDom.innerText = data[index].buyerName
+        buyerDom.classList.add('buyerName')
+        const orderTimeDom = document.createElement('td');
+        orderTimeDom.innerText = data[index].orderTime
+        orderTimeDom.classList.add('orderTime')
+        const operateDom = document.createElement('td');
+        trDom.append(indexDom)
+        trDom.append(orderIdDom)
+        trDom.append(goodsNameDom)
+        trDom.append(priceDom)
+        trDom.append(buyerDom)
+        trDom.append(sellerDom)
+        trDom.append(orderTimeDom)
+        trDom.append(operateDom)
+
+        return trDom
+    }
+
+    const viewBuyerOrder = async () => {
+        try {
+            const {bookkeeping} = await buyerOrders(currentPage)
+            const root = document.querySelector('.tbody');
+            root.innerHTML = ''
+            for (let i = 0; i < bookkeeping.length; i++) {
+                const item = buyerOrderDom(i, bookkeeping)
+                root.appendChild(item);
+            }
+        } catch (e) {
+            console.log(e)
+            throw e
+        }
+    }
+    const viewSellerOrder = async () => {
+        try {
+            const {bookkeeping} = await sellerOrders(currentPage)
+            const root = document.querySelector('.tbody');
+            root.innerHTML = ''
+            for (let i = 0; i < bookkeeping.length; i++) {
+                const item = sellerOrderDom(i, bookkeeping)
+                root.appendChild(item);
+            }
+        } catch (e) {
+            console.log(e)
+            throw e
+        }
+    }
+    const viewPageItem = async () => {
+        const dom = document.getElementById('page-btn');
+        dom.innerText = ''
+        const items = maxPage < 4 ? maxPage : 3
+        for (let i = 0; i < items; i++) {
+            const li = document.createElement('li')
+            li.classList.add('page-item')
+            const a = document.createElement('a')
+            a.classList.add('page-link')
+            a.setAttribute('href', '#')
+            const page = i + 1;
+            a.innerText = page.toString();
+            li.append(a)
+            li.onclick = async () => {
+                currentPage = page
+                await view()
+            }
+            dom.append(li)
+        }
+    }
+    const viewPage = async () => {
+        if (status === 0) {
+            await viewBuyerPage()
+        } else {
+            await viewSellerPage()
+        }
+    }
+    const viewBuyerPage = async () => {
+        try {
+            const {total} = await buyerTotal()
+            const num = parseInt(total)
+            maxPage = Math.ceil(num / 10)
+        } catch (e) {
+            console.log(e)
+        }
+        await viewPageItem()
+    }
+    const viewSellerPage = async () => {
+        try {
+            const {total} = await sellerTotal()
+            const num = parseInt(total)
+            maxPage = Math.ceil(num / 10)
+        } catch (e) {
+            console.log(e)
+        }
+        await viewPageItem()
+    }
+
+    const view = async () => {
+        if (status === 0) {
+            await viewBuyerOrder()
+        } else {
+            await viewSellerOrder()
+        }
+    }
+    window.onload = async () => {
+        try {
+            await view()
+            await viewPage()
+        } catch (e) {
+            console.log(e)
+        }
+
+        document.getElementById('buyer').onclick = async () => {
+            status = 0
+            currentPage = 1
+            await view()
+            await viewPage()
+        }
+        document.getElementById('seller').onclick = async () => {
+            status = 1
+            currentPage = 1
+            await view()
+            await viewPage()
+        }
+        document.getElementById('previous').onclick = async () => {
+            currentPage = currentPage - 1 < 2 ? 1 : currentPage - 1
+            await view()
+        }
+        document.getElementById('next').onclick = async () => {
+            currentPage = currentPage + 1 > maxPage ? maxPage : currentPage + 1
+            await view()
+        }
+        document.querySelector('#home').onclick = () => location.href = "http://localhost:8080/flea"
+
+    }
+</script>
+
+</body>
+</html>

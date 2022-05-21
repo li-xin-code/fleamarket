@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>user</title>
+    <link href="/flea/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/flea/css/common.css" rel="stylesheet">
+    <style>
+        #app {
+            margin: auto auto;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .user-info-card {
+            margin: 10% auto;
+        }
+    </style>
+</head>
+<body class="bg-body">
+<div id="app">
+    <nav id="nav" class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav" id="views">
+                <div class="nav-link active" id="home">Home</div>
+            </div>
+        </div>
+    </nav>
+    <div class="card user-info-card" style="width: 18rem;">
+        <div class="card-header">
+            用户信息
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                userId:<span id="user-id"></span>
+            </li>
+            <li class="list-group-item">
+                username:<span id="username"></span>
+            </li>
+        </ul>
+        <div class="card-footer">
+            <button type="button" class="btn btn-secondary" id="logout">退出登陆</button>
+        </div>
+    </div>
+    <script src="/flea/js/jquery-3.6.0.min.js"></script>
+    <script src="/flea/js/bootstrap.min.js"></script>
+</div>
+</body>
+<script type="module">
+    import {userInfo, logout} from "../js/request/user.js";
+
+    const info = async () => {
+        try {
+            const {user} = await userInfo()
+            console.log(user)
+            document.getElementById("user-id").innerText = user.userId
+            document.getElementById("username").innerText = user.username
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    window.onload = async () => {
+        await info()
+        document.querySelector('#home').onclick = () => location.href = "http://localhost:8080/flea"
+        document.querySelector('#logout').onclick = async () => {
+            localStorage.removeItem('token')
+            localStorage.removeItem('userId')
+            try {
+                await logout()
+                location.href = "http://localhost:8080/flea"
+            } catch (e) {
+                console.log(e)
+            }
+        }
+    }
+</script>
+</html>
