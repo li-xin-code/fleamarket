@@ -1,7 +1,6 @@
 package com.lixin.servlet;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.lixin.common.exception.AuthenticateException;
 import com.lixin.model.vo.UserVo;
 import com.lixin.service.TokenService;
 import com.lixin.service.UserService;
@@ -36,21 +35,10 @@ public class LoginServlet extends HttpServlet {
             throws IOException {
         String username = (String) req.getAttribute("username");
         String password = (String) req.getAttribute("password");
-        if (username == null) {
+        if (username == null || password == null) {
             return;
         }
-        UserVo loginUser;
-        try {
-            loginUser = userService.login(username, password);
-        } catch (AuthenticateException e) {
-            e.printStackTrace();
-            resp.setContentType("application/json");
-            PrintWriter writer = resp.getWriter();
-            JSONObject result = new JSONObject();
-            result.put("error", e.getMessage());
-            writer.print(result);
-            return;
-        }
+        UserVo loginUser = userService.login(username, password);
         String token = tokenService.getToken(loginUser);
         resp.setContentType("application/json");
         PrintWriter writer = resp.getWriter();

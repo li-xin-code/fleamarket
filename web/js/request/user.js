@@ -67,7 +67,8 @@ export function userInfo() {
             if (check.readyState === 4) {
                 let context = JSON.parse(check.responseText);
                 if (check.status === 200) {
-                    resolve(context);
+                    const {user} = context
+                    resolve(user);
                 } else {
                     invalidToken(JSON.parse(check.responseText))
                     reject(context);
@@ -96,3 +97,27 @@ export const logout = () => new Promise((resolve, reject) => {
     });
     check.send()
 })
+
+export const modify = (data) => {
+    return new Promise((resolve, reject) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            const b = confirm("请先登陆");
+            if (b) {
+                window.open("http://localhost:8080/flea/view/login")
+            }
+            reject({message: "请先登陆"})
+        }
+        const request = xhrJsonPost("/user/modify");
+        request.setRequestHeader("token", token);
+        request.onload = () => {
+            if (request.status === 200) {
+                resolve();
+            } else {
+                invalidToken(JSON.parse(request.responseText))
+                reject(request.responseText);
+            }
+        }
+        request.send(JSON.stringify(data));
+    });
+}

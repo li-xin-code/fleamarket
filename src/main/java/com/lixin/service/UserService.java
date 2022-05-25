@@ -1,6 +1,7 @@
 package com.lixin.service;
 
 import com.lixin.common.exception.AuthenticateException;
+import com.lixin.model.form.ModifyUerInfoForm;
 import com.lixin.model.vo.UserVo;
 
 
@@ -35,5 +36,22 @@ public interface UserService {
      * @return true or false
      */
     Boolean checkUsername(String username);
+
+    /**
+     * ...
+     *
+     * @param userId ...
+     * @return ...
+     */
+    UserVo get(String userId);
+
+    /**
+     * ...
+     *
+     * @param form   ...
+     * @param userId ...
+     * @return ...
+     */
+    UserVo modifyUserInfo(ModifyUerInfoForm form, String userId);
 
 }

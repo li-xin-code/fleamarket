@@ -1,6 +1,7 @@
 package com.lixin.dao.impl;
 
 import com.lixin.common.exception.NotExpectedException;
+import com.lixin.common.utils.SystemUtils;
 import com.lixin.common.utils.dbutils.DbUtils;
 import com.lixin.common.utils.dbutils.GenerousBeanHandler;
 import com.lixin.common.utils.dbutils.GenerousBeanListHandler;
@@ -29,7 +30,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public UserBo find(String username) {
-        String sql = "select user_id, username, password from user where username = ?";
+        String sql = "select user_id, username, password,profile from user where username = ?";
         try {
             return runner.query(sql, new GenerousBeanHandler<>(UserBo.class), username);
         } catch (SQLException e) {
@@ -40,7 +41,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public UserBo findByUserId(String userId) {
-        String sql = "select user_id,username,password from user where user_id = ?";
+        String sql = "select user_id,username,password,profile from user where user_id = ?";
         try {
             return runner.query(sql, new GenerousBeanHandler<>(UserBo.class), userId);
         } catch (SQLException e) {
@@ -51,10 +52,10 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Boolean insert(UserBo userBo) {
-        String sql = "insert into user(user_id,username,password) value (?,?,?)";
+        String sql = "insert into user(user_id,username,password,profile) value (?,?,?,?)";
         try {
             int rows = runner.update(sql, userBo.getUserId(),
-                    userBo.getUsername(), userBo.getPassword());
+                    userBo.getUsername(), userBo.getPassword(), userBo.getProfile());
             if (rows != 1) {
                 throw new NotExpectedException(sql + ";result not 1.");
             }
@@ -75,13 +76,15 @@ public class UserDaoImpl implements UserDao {
             return false;
         }
         UserBo byUserBoId = findByUserId(userId);
-        String sql = "update user set username = ?, password = ? where user_id = ?";
+        String sql = "update user set username = ?, password = ?, profile = ? where user_id = ?";
         try {
             String newName = userBo.getUsername();
             String newPass = userBo.getPassword();
-            String username = newName != null ? newName : byUserBoId.getUsername();
-            String pass = newPass != null ? newPass : byUserBoId.getPassword();
-            runner.update(sql, username, pass, userId);
+            String newProfile = userBo.getProfile();
+            String username = SystemUtils.isBlank(newName) ? newName : byUserBoId.getUsername();
+            String pass = SystemUtils.isBlank(newPass) ? newPass : byUserBoId.getPassword();
+            String profile = SystemUtils.isBlank(newProfile) ? newProfile : byUserBoId.getProfile();
+            runner.update(sql, username, pass, profile, userId);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -90,7 +93,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<UserBo> list() {
-        String sql = "select user_id,username,password from user";
+        String sql = "select user_id,username,password,profile from user";
         try {
             return runner.query(sql, new GenerousBeanListHandler<>(UserBo.class));
         } catch (SQLException e) {

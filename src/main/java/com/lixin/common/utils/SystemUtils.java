@@ -26,7 +26,7 @@ public class SystemUtils {
     public static final String USERNAME_REGEX = "^[\\w_\u4e00-\u9fa5\\-]{2,12}$";
     public static final String PASSWORD_REGEX = "^[\\w_!@#$%^&*~+-=]{6,16}$";
     private static final String NUMBER_REGEX = "^[0-9]+$";
-    
+
     private final static String[] CHARS = new String[]{
             "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
             "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
@@ -85,5 +85,9 @@ public class SystemUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isBlank(String s) {
+        return s != null && s.trim().length() != 0;
     }
 }

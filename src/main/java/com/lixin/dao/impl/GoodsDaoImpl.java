@@ -1,5 +1,6 @@
 package com.lixin.dao.impl;
 
+import com.lixin.common.utils.SystemUtils;
 import com.lixin.common.utils.dbutils.DbUtils;
 import com.lixin.common.utils.dbutils.GenerousBeanHandler;
 import com.lixin.common.utils.dbutils.GenerousBeanListHandler;
@@ -130,9 +131,9 @@ public class GoodsDaoImpl implements GoodsDao {
             String newName = goodsBo.getName();
             String newDescription = goodsBo.getDescription();
             Integer newPrice = goodsBo.getPrice();
-            String name = newName != null ? newName : old.getName();
-            String description = newDescription != null ? newDescription : old.getDescription();
-            Integer price = newPrice != null ? newPrice : old.getPrice();
+            String name = SystemUtils.isBlank(newName) ? newName : old.getName();
+            String description = SystemUtils.isBlank(newDescription) ? newDescription : old.getDescription();
+            Integer price = newPrice != null && newPrice > 0 ? newPrice : old.getPrice();
             runner.update(sql, name, description, price, goodsId);
         } catch (SQLException e) {
             e.printStackTrace();

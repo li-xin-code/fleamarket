@@ -1,4 +1,4 @@
-package com.lixin.filter;
+package com.lixin.common.filter;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.lixin.common.enums.HttpStatus;

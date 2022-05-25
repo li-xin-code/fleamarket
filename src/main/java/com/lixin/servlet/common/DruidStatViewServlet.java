@@ -1,4 +1,4 @@
-package com.lixin.servlet;
+package com.lixin.servlet.common;
 
 import com.alibaba.druid.support.http.StatViewServlet;
 

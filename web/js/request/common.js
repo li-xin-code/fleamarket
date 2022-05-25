@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:8080/flea"
+export const baseUrl = "http://localhost:8080/flea"
 
 export function xhrGet(url, parameter = {}) {
     let xhr = new XMLHttpRequest();

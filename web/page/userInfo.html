@@ -12,8 +12,28 @@
             width: 100vw;
         }
 
+        #update-box {
+            margin: 50px auto auto;
+            width: 60%;
+            padding: 5px;
+            background-color: #fff;
+        }
+
         .user-info-card {
             margin: 10% auto;
+        }
+
+        .card * {
+            margin: 0 auto;
+        }
+
+        .img-box {
+            height: 120px;
+            width: 120px;
+        }
+
+        .hide {
+            display: none;
         }
     </style>
 </head>
@@ -23,40 +43,153 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav" id="views">
                 <div class="nav-link active" id="home">Home</div>
+                <div class="nav-link active" id="logout">Logout</div>
             </div>
         </div>
     </nav>
-    <div class="card user-info-card" style="width: 18rem;">
-        <div class="card-header">
-            用户信息
+    <div id="user-info" class="hide">
+        <div class="card user-info-card" style="width: 18rem;">
+            <div class="card-header">用户信息</div>
+            <div class="img-box">
+                <img id="profile" src=""
+                     alt="profile" height="120" width="120">
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    用户ID:<span id="user-id"></span>
+                </li>
+                <li class="list-group-item">
+                    <div>
+                        用户名:<span id="username"></span>
+                    </div>
+                </li>
+            </ul>
+            <div class="card-footer">
+                <button type="button" class="btn btn-secondary" id="modify">修改用户信息</button>
+            </div>
         </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-                userId:<span id="user-id"></span>
-            </li>
-            <li class="list-group-item">
-                username:<span id="username"></span>
-            </li>
-        </ul>
-        <div class="card-footer">
-            <button type="button" class="btn btn-secondary" id="logout">退出登陆</button>
+    </div>
+    <div id="update-box" class="hide">
+        <div class="">
+            <img id="preview" src="" alt="preview" height="120" width="120">
+
+            <button id="select" type="button" class="btn btn-sm btn-primary">选择头像</button>
+            <button id="clear" type="button" class="btn  btn-sm hide btn-secondary">清空头像</button>
         </div>
+        <div class="mb-3 row">
+            <label for="newName" class="col-sm-2 col-form-label">新用户名</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="newName">
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label for="newPass" class="col-sm-2 col-form-label">新密码</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" id="newPass">
+            </div>
+        </div>
+        <div>
+            <button id="modify-submit" type="button" class="btn btn-primary">修改信息</button>
+            <button id="cancel" type="button" class="btn btn-secondary">返回</button>
+        </div>
+
+    </div>
+    <div id="no-login" class="fs-3">
+        还没有登陆，
+        <button type="button" class="btn btn-link fs-3" id="toLogin">去登陆</button>
     </div>
     <script src="/flea/js/jquery-3.6.0.min.js"></script>
     <script src="/flea/js/bootstrap.min.js"></script>
 </div>
 </body>
 <script type="module">
-    import {userInfo, logout} from "../js/request/user.js";
+    import {userInfo, logout, modify} from "../js/request/user.js";
+    import {baseUrl} from "../js/request/common.js";
+    import {upload} from "../js/request/upload.js";
+
+
+    const currFile = {
+        flag: false,
+        file: null
+    }
 
     const info = async () => {
         try {
-            const {user} = await userInfo()
-            console.log(user)
-            document.getElementById("user-id").innerText = user.userId
-            document.getElementById("username").innerText = user.username
+            const {userId, username, profile} = await userInfo()
+            document.getElementById("user-id").innerText = userId
+            document.getElementById("username").innerText = username
+            document.getElementById("profile").src = baseUrl + profile
+            document.getElementById("no-login").classList.add('hide')
+            const userInfoBox = document.getElementById("user-info")
+            const updateBox = document.getElementById("update-box")
+            const preview = document.querySelector('#preview')
+            userInfoBox.classList.remove('hide')
+            document.getElementById("modify").onclick = () => {
+                userInfoBox.classList.add('hide')
+                updateBox.classList.remove('hide')
+                preview.src = 'http://localhost:8080/flea/img/default.jpeg'
+            }
+
+            const clearImg = document.querySelector('#clear');
+            clearImg.onclick = () => {
+                currFile.flag = false
+                currFile.file = null
+                clearImg.classList.add('hide')
+                preview.src = 'http://localhost:8080/flea/img/default.jpeg'
+            }
+            document.querySelector("#select").onclick = () => {
+                const input = document.createElement('input')
+                input.type = 'file'
+                input.onchange = (e) => {
+                    const file = e.currentTarget.files[0]
+                    currFile.file = file
+                    currFile.flag = true
+                    let fileReader = new FileReader()
+                    fileReader.onload = () => {
+                        preview.src = fileReader.result;
+                    }
+                    fileReader.readAsDataURL(file)
+                }
+                input.click()
+                clearImg.classList.remove('hide')
+            }
+
+            document.getElementById('cancel').onclick = () => {
+                currFile.flag = false
+                currFile.file = null
+                clearImg.classList.add('hide')
+                preview.src = 'http://localhost:8080/flea/img/default.jpeg'
+                userInfoBox.classList.remove('hide')
+                updateBox.classList.add('hide')
+                document.getElementById('newName').value = ''
+                document.getElementById('newPass').value = ''
+            }
+
+            document.getElementById('modify-submit').onclick = async () => {
+                console.log(currFile)
+                let profile = ''
+                const name = document.getElementById('newName').value
+                const pass = document.getElementById('newPass').value
+                if (currFile.flag && currFile.file != null) {
+                    try {
+                        profile = await upload(currFile.file)
+                    } catch (e) {
+                        console.log(e)
+                    }
+                }
+                try {
+                    await modify({name, pass, profile})
+                    location.href = 'http://localhost:8080/flea/view/userInfo'
+                } catch (e) {
+                    console.log(e)
+                }
+            }
+
         } catch (e) {
             console.log(e)
+            document.getElementById("toLogin").onclick = () => {
+                location.href = "http://localhost:8080/flea/view/login"
+            }
         }
     }
 

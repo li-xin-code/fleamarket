@@ -1,4 +1,4 @@
-package com.lixin.model.vo;
+package com.lixin.model.form;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -8,12 +8,8 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class UserVo {
-    private String userId;
-    private String username;
-
-    /**
-     * 头像链接
-     */
+public class ModifyUerInfoForm {
+    private String name;
+    private String pass;
     private String profile;
 }

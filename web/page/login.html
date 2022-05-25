@@ -61,10 +61,14 @@
         let usernameInput = document.getElementById("username");
         let username = usernameInput.value;
         let password = pwdInput.value;
-        const {userId, token} = await login({username, password})
-        localStorage.setItem("token", token)
-        localStorage.setItem("userId", userId)
-        location.href = "http://localhost:8080/flea"
+        try {
+            const {userId, token} = await login({username, password})
+            localStorage.setItem("token", token)
+            localStorage.setItem("userId", userId)
+            location.href = "http://localhost:8080/flea"
+        } catch (e) {
+            console.log(e)
+        }
     }
     let toRegisterBtn = document.getElementById("toRegister");
     toRegisterBtn.onclick = () => {

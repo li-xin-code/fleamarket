@@ -1,4 +1,4 @@
-package com.lixin.servlet;
+package com.lixin.servlet.common;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
