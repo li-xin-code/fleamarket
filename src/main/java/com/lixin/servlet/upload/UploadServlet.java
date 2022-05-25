@@ -1,5 +1,6 @@
 package com.lixin.servlet.upload;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.lixin.common.exception.NotExpectedException;
 
 import javax.servlet.ServletException;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.UUID;
 
 import static com.lixin.common.utils.SystemUtils.*;
@@ -50,7 +52,10 @@ public class UploadServlet extends HttpServlet {
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         String newFileName = uuid + suffix;
         file.write(newFileName);
-        resp.getWriter().println(newFileName);
+        PrintWriter writer = resp.getWriter();
+        JSONObject result = new JSONObject();
+        result.put("path", newFileName);
+        writer.print(result);
     }
 
 }
