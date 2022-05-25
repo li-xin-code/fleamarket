@@ -1,5 +1,7 @@
 package com.lixin.servlet;
 
+import com.lixin.common.utils.SystemUtils;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -81,7 +83,7 @@ public class ViewServlet extends HttpServlet {
         try {
             in = getServletContext().getResourceAsStream(viewPath);
             OutputStream out = resp.getOutputStream();
-            inputToOutPut(in, out);
+            SystemUtils.inputToOutPut(in, out);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -90,15 +92,5 @@ public class ViewServlet extends HttpServlet {
         }
     }
 
-    private void inputToOutPut(InputStream in, OutputStream out) {
-        try {
-            int read;
-            while ((read = in.read()) != -1) {
-                out.write(read);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 }
