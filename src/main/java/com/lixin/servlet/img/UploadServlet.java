@@ -1,6 +1,5 @@
 package com.lixin.servlet.img;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.lixin.common.exception.NotExpectedException;
 
 import javax.servlet.ServletException;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.UUID;
 
 import static com.lixin.common.utils.SystemUtils.*;
@@ -44,9 +42,7 @@ public class UploadServlet extends HttpServlet {
         if (file == null) {
             throw new NotExpectedException("file is null.");
         }
-        String type = file.getContentType().toLowerCase();
-        String imageStart = "image/";
-        if (!(type.startsWith(imageStart) && CONTENT_TYPE_MAP.containsValue(type))) {
+        if (!CONTENT_TYPE_MAP.containsValue(file.getContentType().toLowerCase())) {
             throw new NotExpectedException("Unsupported file type.");
         }
         String fileName = file.getSubmittedFileName();
